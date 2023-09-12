@@ -16,6 +16,7 @@
 			},
 			"a11y": {
 				"all": true,
+				"useKeyWithClickEvents": "off",
 				"useButtonType": "off"
 			}
 		}

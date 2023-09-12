@@ -1,7 +1,7 @@
 import { useAtom } from "jotai"
 import { useCallback, useState } from "react"
-import { UUID_DEFAULT_CATEGORY, categoriesAtom } from "../utils"
 import { LuFolderPlus, LuListPlus } from "react-icons/lu"
+import { DEFAULT_CATEGORY_UUID, categoriesAtom } from "../utils"
 import { v4 } from "uuid"
 
 const ItemAdder = () => {
@@ -11,32 +11,35 @@ const ItemAdder = () => {
 		if (name.trim() === "") {
 			return
 		}
-		setCategories((categories) => ({
-			...categories,
-			[UUID_DEFAULT_CATEGORY]: {
-				...categories[UUID_DEFAULT_CATEGORY],
-				items: [
-					...categories[UUID_DEFAULT_CATEGORY].items,
-					{
-						name: name.trim(),
-						checked: false,
-					},
-				],
-			},
-		}))
+		setCategories((categories) => {
+			const defaultCategory = categories.find(
+				(category) => category.id === DEFAULT_CATEGORY_UUID,
+			)
+			if (!defaultCategory) {
+				return categories
+			}
+			defaultCategory.items.push({
+				id: v4(),
+				name: name.trim(),
+				checked: false,
+			})
+			return [...categories]
+		})
 		setName("")
 	}, [name, setCategories])
 	const addCategory = useCallback(() => {
 		if (name.trim() === "") {
 			return
 		}
-		setCategories((categories) => ({
-			...categories,
-			[v4()]: {
+		setCategories((categories) => {
+			categories.push({
+				id: v4(),
 				name: name.trim(),
 				items: [],
-			},
-		}))
+			})
+			return [...categories]
+		})
+		setName("")
 	}, [name, setCategories])
 	return (
 		<div className="flex flex-col gap-y-4">

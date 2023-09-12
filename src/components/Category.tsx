@@ -1,37 +1,62 @@
-import { useSortable } from "@dnd-kit/sortable"
-import { CSS } from "@dnd-kit/utilities"
-import { CategoryInterface } from "../utils"
+import { RxDragHandleDots2 } from "react-icons/rx"
+import { ReactSortable } from "react-sortablejs"
+import {
+	CategoryInterface,
+	DEFAULT_CATEGORY_UUID,
+	categoriesAtom,
+} from "../utils"
 import Item from "./Item"
+import { useAtom } from "jotai"
+import { LuX } from "react-icons/lu"
+import { useCallback } from "react"
 
 interface Props {
-	id: string
+	indexCategory: number
 	category: CategoryInterface
 }
 
 const Category = (props: Props) => {
-	const { attributes, listeners, setNodeRef, transform, transition } =
-		useSortable({ id: props.id })
-
-	const style = {
-		transform: CSS.Transform.toString(transform),
-		transition,
-	}
+	const [, setCategories] = useAtom(categoriesAtom)
+	const onDelete = useCallback(() => {
+		setCategories((categories) => {
+			categories.splice(props.indexCategory, 1)
+			return [...categories]
+		})
+	}, [props.indexCategory, setCategories])
 	return (
-		<div
-			className="flex flex-col gap-y-4"
-			ref={setNodeRef}
-			style={style}
-			{...attributes}
-			{...listeners}
-		>
+		<div className="flex flex-col gap-y-4">
 			<div className="flex items-center gap-x-4">
+				<RxDragHandleDots2 className="handle-category" />
 				<p>{props.category.name}</p>
 				<hr className="w-full" />
+				{props.category.id !== DEFAULT_CATEGORY_UUID && (
+					<button onClick={onDelete}>
+						<LuX />
+					</button>
+				)}
 			</div>
-			<div className="flex flex-col gap-y-2">
-				{Object.entries(props.category.items).map(([id, item]) => (
-					<Item key={id} {...item} />
-				))}
+			<div className="flex flex-col">
+				<ReactSortable
+					list={props.category.items}
+					setList={(items) => {
+						if (items.length === 0) {
+							return
+						}
+						props.category.items = items
+						setCategories((categories) => [...categories])
+					}}
+					group={"shared"}
+					handle=".handle-item"
+				>
+					{props.category.items.map((item, indexItem) => (
+						<Item
+							key={item.id}
+							indexCategory={props.indexCategory}
+							indexItem={indexItem}
+							item={item}
+						/>
+					))}
+				</ReactSortable>
 			</div>
 		</div>
 	)

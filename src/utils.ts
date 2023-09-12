@@ -1,22 +1,29 @@
+import { atom } from "jotai"
 import { atomWithStorage } from "jotai/utils"
 
 export interface ItemInterface {
+	id: string
 	name: string
 	checked: boolean
 }
 
 export interface CategoryInterface {
+	id: string
 	name: string
 	items: ItemInterface[]
 }
 
-export const UUID_DEFAULT_CATEGORY = "00000000-0000-0000-0000-000000000000"
+export const DEFAULT_CATEGORY_UUID = "00000000-0000-0000-0000-000000000000"
 
-export const categoriesAtom = atomWithStorage<
-	Record<string, CategoryInterface>
->("categoriesAtom", {
-	[UUID_DEFAULT_CATEGORY]: {
-		name: "Default",
-		items: [] as ItemInterface[],
-	},
-})
+export const categoriesAtom = atomWithStorage<CategoryInterface[]>(
+	"categoriesAtom",
+	[
+		{
+			id: DEFAULT_CATEGORY_UUID,
+			name: "Default",
+			items: [],
+		},
+	],
+)
+
+export const itemFocusIdAtom = atom<string | null>(null)
