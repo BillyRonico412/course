@@ -1,8 +1,8 @@
 import { useAtom } from "jotai"
 import { useCallback, useState } from "react"
 import { LuFolderPlus, LuListPlus } from "react-icons/lu"
-import { DEFAULT_CATEGORY_UUID, categoriesAtom } from "../utils"
 import { v4 } from "uuid"
+import { categoriesAtom } from "../utils"
 
 const ItemAdder = () => {
 	const [name, setName] = useState("")
@@ -12,13 +12,7 @@ const ItemAdder = () => {
 			return
 		}
 		setCategories((categories) => {
-			const defaultCategory = categories.find(
-				(category) => category.id === DEFAULT_CATEGORY_UUID,
-			)
-			if (!defaultCategory) {
-				return categories
-			}
-			defaultCategory.items.push({
+			categories[categories.length - 1].items.push({
 				id: v4(),
 				name: name.trim(),
 				checked: false,

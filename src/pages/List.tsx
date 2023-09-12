@@ -6,7 +6,6 @@ import { ReactSortable } from "react-sortablejs"
 
 const List = () => {
 	const [categories, setCategories] = useAtom(categoriesAtom)
-
 	return (
 		<div className="h-full flex flex-col">
 			<h1 className="text-2xl font-bold text-center">Courses</h1>

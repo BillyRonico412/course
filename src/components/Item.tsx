@@ -2,7 +2,12 @@ import { useAtom } from "jotai"
 import { useCallback } from "react"
 import { LuX } from "react-icons/lu"
 import { RxDragHandleDots2 } from "react-icons/rx"
-import { ItemInterface, categoriesAtom, itemFocusIdAtom } from "../utils"
+import {
+	ItemInterface,
+	categoriesAtom,
+	categoryFocusIdAtom,
+	itemFocusIdAtom,
+} from "../utils"
 
 interface Props {
 	indexCategory: number
@@ -29,14 +34,18 @@ const Item = (props: Props) => {
 		})
 	}, [props.indexCategory, props.indexItem, setCategories])
 	const [itemFocusId, setItemFocusId] = useAtom(itemFocusIdAtom)
+	const [, setCategoryFocusId] = useAtom(categoryFocusIdAtom)
 	return (
 		<div
 			className={`flex gap-x-2 items-center px-2 py-2 ${
-				itemFocusId === props.item.id ? "bg-gray-100" : ""
+				itemFocusId !== null && itemFocusId === props.item.id
+					? "bg-gray-100"
+					: "bg-white"
 			}`}
 			onClick={(e) => {
-				e.stopPropagation()
+				setCategoryFocusId(null)
 				setItemFocusId(props.item.id)
+				e.stopPropagation()
 			}}
 		>
 			<RxDragHandleDots2 className="handle-item" />

@@ -1,14 +1,16 @@
+import { useAtom } from "jotai"
+import { useCallback } from "react"
+import { LuX } from "react-icons/lu"
 import { RxDragHandleDots2 } from "react-icons/rx"
 import { ReactSortable } from "react-sortablejs"
 import {
 	CategoryInterface,
 	DEFAULT_CATEGORY_UUID,
 	categoriesAtom,
+	categoryFocusIdAtom,
+	itemFocusIdAtom,
 } from "../utils"
 import Item from "./Item"
-import { useAtom } from "jotai"
-import { LuX } from "react-icons/lu"
-import { useCallback } from "react"
 
 interface Props {
 	indexCategory: number
@@ -23,14 +25,36 @@ const Category = (props: Props) => {
 			return [...categories]
 		})
 	}, [props.indexCategory, setCategories])
+	const [categoryFocusId, setCategoryFocusId] = useAtom(categoryFocusIdAtom)
+	const [, setItemFocusId] = useAtom(itemFocusIdAtom)
 	return (
-		<div className="flex flex-col gap-y-4">
-			<div className="flex items-center gap-x-4">
+		<div className="flex flex-col">
+			<div
+				className={`flex items-center gap-x-4 py-2 ${
+					categoriesAtom !== null && categoryFocusId === props.category.id
+						? "bg-gray-100"
+						: "bg-white"
+				}`}
+				onClick={(e) => {
+					setItemFocusId(null)
+					setCategoryFocusId(props.category.id)
+					e.stopPropagation()
+				}}
+			>
 				<RxDragHandleDots2 className="handle-category" />
-				<p>{props.category.name}</p>
-				<hr className="w-full" />
+				<input
+					type="text"
+					value={props.category.name}
+					className="inline-block flex-grow outline-none bg-inherit"
+					onInput={(e) => {
+						setCategories((categories) => {
+							categories[props.indexCategory].name = e.currentTarget.value
+							return [...categories]
+						})
+					}}
+				/>
 				{props.category.id !== DEFAULT_CATEGORY_UUID && (
-					<button onClick={onDelete}>
+					<button onClick={onDelete} className="ml-auto">
 						<LuX />
 					</button>
 				)}
