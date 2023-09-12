@@ -1,14 +1,25 @@
-import { Redirect, Route, Switch } from "wouter"
+import { useAtom } from "jotai"
+import { Redirect, Route, Router } from "wouter"
+import {
+	BaseLocationHook,
+	navigate,
+	useLocationProperty,
+} from "wouter/use-location"
 import Footer from "./components/Footer"
 import Check from "./pages/Check"
 import List from "./pages/List"
 import Settings from "./pages/Settings"
-import { useAtom } from "jotai"
 import { categoryFocusIdAtom, itemFocusIdAtom } from "./utils"
 
 const App = () => {
 	const [, setItemFocusId] = useAtom(itemFocusIdAtom)
 	const [, setCategoryFocusId] = useAtom(categoryFocusIdAtom)
+	const hashLocation = () => window.location.hash.replace(/^#/, "") || "/"
+	const hashNavigate = (to: string) => navigate(`#${to}`)
+	const useHashLocation: BaseLocationHook = () => {
+		const location = useLocationProperty(hashLocation)
+		return [location, hashNavigate]
+	}
 	return (
 		<div
 			className="h-screen flex flex-col w-screen overflow-x-hidden"
@@ -18,7 +29,7 @@ const App = () => {
 			}}
 		>
 			<div className="flex-grow px-4 py-2">
-				<Switch>
+				<Router hook={useHashLocation}>
 					<Route path="/list">
 						<List />
 					</Route>
@@ -29,7 +40,7 @@ const App = () => {
 						<Settings />
 					</Route>
 					<Redirect to="/list" />
-				</Switch>
+				</Router>
 			</div>
 			<Footer />
 		</div>
