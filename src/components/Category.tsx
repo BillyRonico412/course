@@ -53,11 +53,12 @@ const Category = (props: Props) => {
 						})
 					}}
 				/>
-				{props.category.id !== DEFAULT_CATEGORY_UUID && (
-					<button onClick={onDelete} className="ml-auto">
-						<LuX />
-					</button>
-				)}
+				{props.category.id === categoryFocusId &&
+					props.category.id !== DEFAULT_CATEGORY_UUID && (
+						<button onClick={onDelete} className="ml-auto">
+							<LuX />
+						</button>
+					)}
 			</div>
 			<div className="flex flex-col">
 				<ReactSortable
