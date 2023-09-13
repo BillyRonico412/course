@@ -1,10 +1,5 @@
 import { useAtom } from "jotai"
 import { Redirect, Route, Router } from "wouter"
-import {
-	BaseLocationHook,
-	navigate,
-	useLocationProperty,
-} from "wouter/use-location"
 import Footer from "./components/Footer"
 import Check from "./pages/Check"
 import List from "./pages/List"
