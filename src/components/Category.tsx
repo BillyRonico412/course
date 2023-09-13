@@ -1,5 +1,5 @@
 import { useAtom } from "jotai"
-import { useCallback } from "react"
+import { useCallback, useMemo } from "react"
 import { LuX } from "react-icons/lu"
 import { RxDragHandleDots2 } from "react-icons/rx"
 import { ReactSortable } from "react-sortablejs"
@@ -15,6 +15,7 @@ import Item from "./Item"
 interface Props {
 	indexCategory: number
 	category: CategoryInterface
+	checked: boolean
 }
 
 const Category = (props: Props) => {
@@ -27,6 +28,10 @@ const Category = (props: Props) => {
 	}, [props.indexCategory, setCategories])
 	const [categoryFocusId, setCategoryFocusId] = useAtom(categoryFocusIdAtom)
 	const [, setItemFocusId] = useAtom(itemFocusIdAtom)
+	const items = props.category.items
+		.map((item, indexItem) => [item, indexItem] as const)
+		.filter(([item]) => item.checked === props.checked)
+
 	return (
 		<div className="flex flex-col">
 			<div
@@ -41,11 +46,13 @@ const Category = (props: Props) => {
 					e.stopPropagation()
 				}}
 			>
-				<RxDragHandleDots2 className="handle-category" />
+				{!props.checked && <RxDragHandleDots2 className="handle-category" />}
 				<input
 					type="text"
 					value={props.category.name}
-					className="inline-block flex-grow outline-none bg-inherit"
+					className={`inline-block flex-grow outline-none bg-inherit ${
+						props.checked ? "line-through text-opacity-50" : ""
+					}`}
 					onInput={(e) => {
 						setCategories((categories) => {
 							categories[props.indexCategory].name = e.currentTarget.value
@@ -62,7 +69,7 @@ const Category = (props: Props) => {
 			</div>
 			<div className="flex flex-col">
 				<ReactSortable
-					list={props.category.items}
+					list={items.map(([item]) => item)}
 					setList={(items) => {
 						if (items.length === 0) {
 							return
@@ -73,7 +80,7 @@ const Category = (props: Props) => {
 					group={"shared"}
 					handle=".handle-item"
 				>
-					{props.category.items.map((item, indexItem) => (
+					{items.map(([item, indexItem]) => (
 						<Item
 							key={item.id}
 							indexCategory={props.indexCategory}

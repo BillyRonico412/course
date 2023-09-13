@@ -37,7 +37,7 @@ const Item = (props: Props) => {
 	const [, setCategoryFocusId] = useAtom(categoryFocusIdAtom)
 	return (
 		<div
-			className={`flex gap-x-2 items-center px-2 py-2 ${
+			className={`flex gap-x-2 items-center pl-4 py-2 ${
 				itemFocusId !== null && itemFocusId === props.item.id
 					? "bg-gray-100"
 					: "bg-white"
@@ -49,10 +49,23 @@ const Item = (props: Props) => {
 			}}
 		>
 			<RxDragHandleDots2 className="handle-item" />
-			<input type="checkbox" />
+			<input
+				type="checkbox"
+				onChange={(e) => {
+					console.log(props.indexCategory, props.indexItem)
+					setCategories((categories) => {
+						categories[props.indexCategory].items[props.indexItem].checked =
+							e.currentTarget.checked
+						return [...categories]
+					})
+				}}
+				checked={props.item.checked}
+			/>
 			<input
 				type="text"
-				className="w-full outline-none bg-inherit"
+				className={`w-full outline-none bg-inherit ${
+					props.item.checked ? "line-through text-opacity-50" : ""
+				}`}
 				value={props.item.name}
 				onInput={onInput}
 			/>
