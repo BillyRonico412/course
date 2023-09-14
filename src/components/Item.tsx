@@ -10,6 +10,7 @@ import {
 } from "../utils"
 
 interface Props {
+	checked: boolean
 	indexCategory: number
 	indexItem: number
 	item: ItemInterface
@@ -35,6 +36,9 @@ const Item = (props: Props) => {
 	}, [props.indexCategory, props.indexItem, setCategories])
 	const [itemFocusId, setItemFocusId] = useAtom(itemFocusIdAtom)
 	const [, setCategoryFocusId] = useAtom(categoryFocusIdAtom)
+	if (props.item.checked !== props.checked) {
+		return <></>
+	}
 	return (
 		<div
 			className={`flex gap-x-2 items-center pl-4 py-2 ${

@@ -6,13 +6,11 @@ import { ReactSortable } from "react-sortablejs"
 import {
 	CategoryInterface,
 	DEFAULT_CATEGORY_UUID,
-	ItemInterface,
 	categoriesAtom,
 	categoryFocusIdAtom,
 	itemFocusIdAtom,
 } from "../utils"
 import Item from "./Item"
-import { merge } from "radash"
 
 interface Props {
 	indexCategory: number
@@ -30,9 +28,6 @@ const Category = (props: Props) => {
 	}, [props.indexCategory, setCategories])
 	const [categoryFocusId, setCategoryFocusId] = useAtom(categoryFocusIdAtom)
 	const [, setItemFocusId] = useAtom(itemFocusIdAtom)
-	const items = props.category.items
-		.map((item, indexItem) => [item, indexItem] as const)
-		.filter(([item]) => item.checked === props.checked)
 
 	return (
 		<div className="flex flex-col">
@@ -71,23 +66,23 @@ const Category = (props: Props) => {
 			</div>
 			<div className="flex flex-col">
 				<ReactSortable
-					list={items.map(([item]) => item)}
+					list={props.category.items}
 					setList={(items) => {
-						props.category.items = merge(
-							props.category.items,
-							items,
-							(item) => item.id,
-						) as ItemInterface[]
+						if (items.length === 0) {
+							return
+						}
+						props.category.items = items
 						setCategories((categories) => [...categories])
 					}}
-					group={"shared"}
+					group={`shared-${String(props.checked)}`}
 					handle=".handle-item"
 				>
-					{items.map(([item, indexItem]) => (
+					{props.category.items.map((item, indexItem) => (
 						<Item
 							key={item.id}
 							indexCategory={props.indexCategory}
 							indexItem={indexItem}
+							checked={props.checked}
 							item={item}
 						/>
 					))}

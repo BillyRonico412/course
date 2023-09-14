@@ -19,7 +19,7 @@ const ListGeneric = (props: Props) => {
 				setCategories(categories)
 			}}
 			handle=".handle-category"
-			group="nested"
+			group={`nested-${props.checked}`}
 		>
 			{categories.map((category, indexCategory) => (
 				<Category
