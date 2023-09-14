@@ -1,16 +1,18 @@
 import { useAtom } from "jotai"
-import { useCallback, useMemo } from "react"
+import { useCallback } from "react"
 import { LuX } from "react-icons/lu"
 import { RxDragHandleDots2 } from "react-icons/rx"
 import { ReactSortable } from "react-sortablejs"
 import {
 	CategoryInterface,
 	DEFAULT_CATEGORY_UUID,
+	ItemInterface,
 	categoriesAtom,
 	categoryFocusIdAtom,
 	itemFocusIdAtom,
 } from "../utils"
 import Item from "./Item"
+import { merge } from "radash"
 
 interface Props {
 	indexCategory: number
@@ -71,10 +73,11 @@ const Category = (props: Props) => {
 				<ReactSortable
 					list={items.map(([item]) => item)}
 					setList={(items) => {
-						if (items.length === 0) {
-							return
-						}
-						props.category.items = items
+						props.category.items = merge(
+							props.category.items,
+							items,
+							(item) => item.id,
+						) as ItemInterface[]
 						setCategories((categories) => [...categories])
 					}}
 					group={"shared"}

@@ -52,7 +52,6 @@ const Item = (props: Props) => {
 			<input
 				type="checkbox"
 				onChange={(e) => {
-					console.log(props.indexCategory, props.indexItem)
 					setCategories((categories) => {
 						categories[props.indexCategory].items[props.indexItem].checked =
 							e.currentTarget.checked

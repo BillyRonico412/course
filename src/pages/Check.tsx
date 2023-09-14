@@ -5,44 +5,40 @@ import { categoriesAtom } from "../utils"
 
 const Check = () => {
 	const [index, setIndex] = useState(0)
-	const [indexItemsNotChecked, setIndexItemsNotChecked] = useState<
+	const [indexItemsChecked, setIndexItemsChecked] = useState<
 		[number, number][] | null
 	>(null)
 	const [categories, setCategories] = useAtom(categoriesAtom)
 	const handlers = useSwipeable({
 		onSwipedLeft: () => {
-			if (indexItemsNotChecked === null) {
+			if (indexItemsChecked === null) {
 				return
 			}
-			const item =
-				categories[indexItemsNotChecked[index][0]].items[
-					indexItemsNotChecked[index][1]
-				]
-			console.log(item)
-			item.checked = false
-			console.log(item)
-			setCategories([...categories])
+			setCategories((categories) => {
+				categories[indexItemsChecked[index][0]].items[
+					indexItemsChecked[index][1]
+				].checked = false
+				return [...categories]
+			})
 			setIndex((index) => index + 1)
 		},
 		onSwipedRight: () => {
-			if (indexItemsNotChecked === null) {
+			if (indexItemsChecked === null) {
 				return
 			}
-			const item =
-				categories[indexItemsNotChecked[index][0]].items[
-					indexItemsNotChecked[index][1]
-				]
-			console.log(item)
-			item.checked = true
-			console.log(item)
-			setCategories([...categories])
+			setCategories((categories) => {
+				categories[indexItemsChecked[index][0]].items[
+					indexItemsChecked[index][1]
+				].checked = true
+				return [...categories]
+			})
 			setIndex((index) => index + 1)
 		},
 	})
 
 	useEffect(() => {
-		if (indexItemsNotChecked === null) {
-			setIndexItemsNotChecked(
+		if (indexItemsChecked === null) {
+			setIndexItemsChecked(
 				categories
 					.flatMap((category, indexCategory) =>
 						category.items.map(
@@ -55,9 +51,9 @@ const Check = () => {
 					),
 			)
 		}
-	}, [categories, indexItemsNotChecked])
+	}, [categories, indexItemsChecked])
 
-	if (indexItemsNotChecked === null) {
+	if (indexItemsChecked === null) {
 		return (
 			<div className="w-full h-full flex justify-center items-center">
 				<div className="text-2xl font-bold text-center">Chargement...</div>
@@ -73,7 +69,7 @@ const Check = () => {
 		)
 	}
 
-	if (indexItemsNotChecked.length === 0) {
+	if (indexItemsChecked.length === 0) {
 		return (
 			<div className="w-full h-full flex justify-center items-center">
 				<div className="text-2xl font-bold text-center">Tout est checké</div>
@@ -81,7 +77,7 @@ const Check = () => {
 		)
 	}
 
-	if (index >= indexItemsNotChecked.length) {
+	if (index >= indexItemsChecked.length) {
 		return (
 			<div className="w-full h-full flex justify-center items-center">
 				<div className="text-2xl font-bold text-center">Fin de la liste</div>
@@ -95,8 +91,8 @@ const Check = () => {
 			{...handlers}
 		>
 			{
-				categories[indexItemsNotChecked[index][0]].items[
-					indexItemsNotChecked[index][1]
+				categories[indexItemsChecked[index][0]].items[
+					indexItemsChecked[index][1]
 				].name
 			}
 		</div>
