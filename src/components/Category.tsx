@@ -1,5 +1,5 @@
 import { useAtom } from "jotai"
-import { useCallback } from "react"
+import { useCallback, useEffect, useRef } from "react"
 import { LuX } from "react-icons/lu"
 import { RxDragHandleDots2 } from "react-icons/rx"
 import { ReactSortable } from "react-sortablejs"
@@ -9,6 +9,7 @@ import {
 	categoriesAtom,
 	categoryFocusIdAtom,
 	itemFocusIdAtom,
+	lastCategoryAddedIdAtom,
 } from "../utils"
 import Item from "./Item"
 
@@ -19,6 +20,9 @@ interface Props {
 }
 
 const Category = (props: Props) => {
+	const [lastCategoryAddedId, setLastCategoryAddedId] = useAtom(
+		lastCategoryAddedIdAtom,
+	)
 	const [, setCategories] = useAtom(categoriesAtom)
 	const onDelete = useCallback(() => {
 		setCategories((categories) => {
@@ -28,11 +32,31 @@ const Category = (props: Props) => {
 	}, [props.indexCategory, setCategories])
 	const [categoryFocusId, setCategoryFocusId] = useAtom(categoryFocusIdAtom)
 	const [, setItemFocusId] = useAtom(itemFocusIdAtom)
+	const refDivCategory = useRef<HTMLDivElement>(null)
+
+	useEffect(() => {
+		if (
+			props.checked &&
+			lastCategoryAddedId !== null &&
+			lastCategoryAddedId === props.category.id
+		) {
+			refDivCategory.current?.scrollIntoView({
+				behavior: "smooth",
+				block: "nearest",
+			})
+			setLastCategoryAddedId(null)
+		}
+	}, [
+		lastCategoryAddedId,
+		props.category.id,
+		setLastCategoryAddedId,
+		props.checked,
+	])
 
 	return (
-		<div className="flex flex-col">
+		<div className="flex flex-col" ref={refDivCategory}>
 			<div
-				className={`flex items-center gap-x-4 py-2 ${
+				className={`flex items-center gap-x-4 px-4 py-2 ${
 					categoriesAtom !== null && categoryFocusId === props.category.id
 						? "bg-gray-100"
 						: "bg-white"
@@ -47,7 +71,7 @@ const Category = (props: Props) => {
 				<input
 					type="text"
 					value={props.category.name}
-					className={`inline-block flex-grow outline-none bg-inherit ${
+					className={`inline-block flex-grow outline-none bg-inherit font-semibold text-lg ${
 						props.checked ? "line-through text-opacity-50" : ""
 					}`}
 					onInput={(e) => {

@@ -1,5 +1,5 @@
 import { useAtom } from "jotai"
-import { useCallback } from "react"
+import { useCallback, useEffect, useRef } from "react"
 import { LuX } from "react-icons/lu"
 import { RxDragHandleDots2 } from "react-icons/rx"
 import {
@@ -7,6 +7,7 @@ import {
 	categoriesAtom,
 	categoryFocusIdAtom,
 	itemFocusIdAtom,
+	lastItemAddedIdAtom,
 } from "../utils"
 
 interface Props {
@@ -18,6 +19,8 @@ interface Props {
 
 const Item = (props: Props) => {
 	const [, setCategories] = useAtom(categoriesAtom)
+	const [lastItemAddedId, setLastItemAddedId] = useAtom(lastItemAddedIdAtom)
+	const refDivItem = useRef<HTMLDivElement>(null)
 	const onInput = useCallback(
 		(e: React.FormEvent<HTMLInputElement>) => {
 			setCategories((categories) => {
@@ -28,6 +31,16 @@ const Item = (props: Props) => {
 		},
 		[props.indexCategory, props.indexItem, setCategories],
 	)
+	useEffect(() => {
+		if (lastItemAddedId !== null && lastItemAddedId === props.item.id) {
+			refDivItem.current?.scrollIntoView({
+				behavior: "smooth",
+				block: "nearest",
+			})
+			setLastItemAddedId(null)
+		}
+	}, [lastItemAddedId, props.item.id, setLastItemAddedId])
+
 	const onDelete = useCallback(() => {
 		setCategories((categories) => {
 			categories[props.indexCategory].items.splice(props.indexItem, 1)
@@ -41,7 +54,8 @@ const Item = (props: Props) => {
 	}
 	return (
 		<div
-			className={`flex gap-x-2 items-center pl-4 py-2 ${
+			ref={refDivItem}
+			className={`flex gap-x-2 items-center pl-8 pr-4 py-2 ${
 				itemFocusId !== null && itemFocusId === props.item.id
 					? "bg-gray-100"
 					: "bg-white"

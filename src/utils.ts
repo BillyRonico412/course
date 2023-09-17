@@ -29,3 +29,5 @@ export const categoriesAtom = atomWithStorage<CategoryInterface[]>(
 export const itemFocusIdAtom = atom<string | null>(null)
 export const categoryFocusIdAtom = atom<string | null>(null)
 export const searchAtom = atom<string>("")
+export const lastItemAddedIdAtom = atom<string | null>(null)
+export const lastCategoryAddedIdAtom = atom<string | null>(null)
